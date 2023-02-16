@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../finish class/style_1.css">
+  <script src="../finish class/script_1.js"></script>
+  <title>Финальное задание</title>
+</head>
+<body>
+<fieldset>
+  <legend>Введите</legend>
+  <p> <label>номер страницы</label> <br />
+    <input id="1" class="text" size="20" value=''> </p>
+  <p> <label>лимит</label> <br />
+    <input id="2" class="text" size="20" value=''> </p>
+  <p> <button class="button">Запрос</button> </p>
+</fieldset>
+<div id="j-result"></div>
+<div id="res"></div>
+
+
+ <script>
+  const btn = document.querySelector('.button');
+  let res = document.getElementById('res')
+
+  if (loadPhotosFromLocalStorage())
+    console.log("Загружены последние просмотренные фото.");
+
+
+
+btn.addEventListener ('click', (e) => {
+    const page = +document.getElementById('1').value;
+    const limit = +document.getElementById('2').value;
+    
+
+    let result = document.getElementById('j-result');
+    result.textContent = '';
+  if (!(page >= 1 && page <= 10 && limit >= 1 || limit <= 10 )) {
+          result.textContent = 'Номер страницы и лимит вне диапазона от 1 до 10';
+            return;
+  }else  
+    if (!(page >= 1 && page <= 10 )) {
+          result.textContent = 'Номер страницы вне диапазона от 1 до 10';
+            return;
+    }else if 
+        (!(limit >= 1 && limit <= 10 )) {
+          result.textContent = 'Лимит вне диапазона от 1 до 10';
+            return;
+    }else {
+      const url = `https://picsum.photos/v2/list?page=${page}&limit=${limit}`;
+      fetch(url)
+    .then(response => response.json())
+    .then((json) => {
+            loadPhotos(json);
+            savePhotosToLocalStorage();
+        })
+      .catch(console.error());
+      };
+     });     
+
+ function loadPhotos(data) {
+    let cards = String();
+
+    data.forEach(item => {
+        const cardBlock =     `<div>
+                                <img
+                                  src="${item.download_url}"
+                                  style="width: 150px; margin-right: 30px"
+                                />
+                                <p>${item.author}</p>
+                              </div>`;
+        cards += cardBlock;
+    });
+
+    res.innerHTML = cards;
+}
+
+function savePhotosToLocalStorage() {
+    localStorage.setItem("last_photos", res.innerHTML);
+}
+
+function loadPhotosFromLocalStorage() {
+    res.innerHTML = localStorage.getItem("last_photos");
+    return  res.innerHTML.length > 0;
+}
+        
+ </script>
+</body>
+</html>
+
+
+
